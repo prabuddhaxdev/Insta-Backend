@@ -1,6 +1,5 @@
 import  { useState } from "react";
 import { Link } from "react-router";
-import axios from "axios";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -9,22 +8,6 @@ const Register = () => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
-    axios
-      .post(
-        "http://localhost:3000/api/auth/register",
-        {
-          username,
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
-        },
-      )
-      .then((res) => {
-        console.log(res.data);
-      });
   }
 
   return (
@@ -37,7 +20,7 @@ const Register = () => {
               setUsername(e.target.value);
             }}
             type="text"
-            name="username"
+            name='username'
             placeholder="Enter username"
           />
           <input
@@ -45,7 +28,7 @@ const Register = () => {
               setEmail(e.target.value);
             }}
             type="text"
-            name="email"
+            name='email'
             placeholder="Enter email"
           />
           <input
@@ -53,7 +36,7 @@ const Register = () => {
               setPassword(e.target.value);
             }}
             type="password"
-            name="password"
+            name='password'
             placeholder="Enter password"
           />
           <button>Register</button>
