@@ -1,14 +1,9 @@
-import  { useState } from "react";
 import { Link } from "react-router";
 
 const Register = () => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  async function handleSubmit(e) {
+  const handleSubmit = (e) => {
     e.preventDefault();
-  }
+  };
 
   return (
     <main>
@@ -16,37 +11,28 @@ const Register = () => {
         <h1>Register</h1>
         <form onSubmit={handleSubmit}>
           <input
-            onInput={(e) => {
-              setUsername(e.target.value);
-            }}
             type="text"
-            name='username'
+            name="username"
+            id="username"
             placeholder="Enter username"
           />
           <input
-            onInput={(e) => {
-              setEmail(e.target.value);
-            }}
-            type="text"
-            name='email'
-            placeholder="Enter email"
+            type="email"
+            name="email"
+            id="email"
+            placeholder="Enter email address"
           />
           <input
-            onInput={(e) => {
-              setPassword(e.target.value);
-            }}
             type="password"
-            name='password'
+            name="password"
+            id="password"
             placeholder="Enter password"
           />
-          <button>Register</button>
+          <button className="button primary-button">Register</button>
         </form>
 
         <p>
-          Already have an account?{" "}
-          <Link className="toggleAuthForm" to="/login">
-            Login
-          </Link>
+          Already have an account ? <Link to={"/login"}>Login to account.</Link>
         </p>
       </div>
     </main>
