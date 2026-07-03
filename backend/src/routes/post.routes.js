@@ -13,8 +13,10 @@ postRouter.post(
   postController.createPostController,
 );
 
+
 // GET /api/posts/
 postRouter.get("/", identifyUser, postController.getPostController);
+
 
 //GET /api/posts/details/:postid
 postRouter.get(
@@ -23,12 +25,16 @@ postRouter.get(
   postController.getPostDetailsController,
 );
 
-// POST /api/posts/like/:postid
 
+// POST /api/posts/like/:postid
 postRouter.post(
   "/like/:postId",
   identifyUser,
   postController.likePostController,
 );
+
+
+// GET / api / posts / feed
+postRouter.get("/feed", identifyUser, postController.getFeedController);
 
 module.exports = postRouter;
