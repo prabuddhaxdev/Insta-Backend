@@ -1,52 +1,48 @@
-const postModel = require('../models/post.models')
-const Imagekit = require('@imagekit/nodejs')
-const { toFile } = require('@imagekit/nodejs')
-const jwt = require('jsonwebtoken')
+const postModel = require("../models/post.models");
+const Imagekit = require("@imagekit/nodejs");
+const { toFile } = require("@imagekit/nodejs");
+const jwt = require("jsonwebtoken");
 const likeModel = require("../models/like.models");
 
 const imagekit = new Imagekit({
-    privateKey : process.env.IMAGEKIT_PRIVATE_KEY
-})
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+});
 
-async function createPostController(req,res){
+async function createPostController(req, res) {
+  const file = await imagekit.files.upload({
+    file: await toFile(Buffer.from(req.file.buffer), "file"),
+    fileName: "Test",
+    folder: "Cohort-2-Insta-Clone-post",
+  });
 
-    const file = await imagekit.files.upload({
-        file: await toFile(Buffer.from(req.file.buffer), 'file') ,
-        fileName: "Test",
-        folder: "Cohort-2-Insta-Clone-post"
-    })
+  const post = await postModel.create({
+    caption: req.body.caption,
+    imageUrl: file.url,
+    user: req.user.id,
+  });
 
-    const post = await postModel.create({
-      caption: req.body.caption,
-      imageUrl: file.url,
-      user: req.user.id,
-    });
+  res.status(201).json({
+    message: "Post created successfully",
+    post,
+  });
 
-    res.status(201).json({
-        message:"Post created successfully",
-        post
-    })
-
-    res.send(file)
+  res.send(file);
 }
 
-async function getPostController(req,res){
+async function getPostController(req, res) {
+  const userId = req.user.id;
 
-    const userId = req.user.id
+  const posts = await postModel.find({
+    user: userId,
+  });
 
-    const posts = await postModel.find({
-        user: userId
-    })
-
-    res.status(200).json({
-        message: "Posts fetched successfully.",
-        posts
-    })
+  res.status(200).json({
+    message: "Posts fetched successfully.",
+    posts,
+  });
 }
-
 
 async function getPostDetailsController(req, res) {
-
   const userId = req.user.id;
   const postId = req.params.postId;
 
@@ -95,11 +91,33 @@ async function likePostController(req, res) {
   });
 }
 
+async function unLikePostController(req, res) {
+  const postId = req.params.postId;
+  const username = req.user.username;
+
+  const isLiked = await likeModel.findOne({
+    post: postId,
+    user: username,
+  });
+
+  if (!isLiked) {
+    return res.status(400).json({
+      message: "Post didn't like",
+    });
+  }
+
+  await likeModel.findOneAndDelete({ _id: isLiked._id });
+
+  return res.status(200).json({
+    message: "post unliked successfully.",
+  });
+}
+
 async function getFeedController(req, res) {
   const user = req.user;
 
   const posts = await Promise.all(
-    (await postModel.find().populate("user").lean()).map(async (post) => {
+    (await postModel.find({}).populate("user").lean()).map(async (post) => {
       /**
        * typeof post => object
        */
@@ -121,11 +139,11 @@ async function getFeedController(req, res) {
   });
 }
 
-
 module.exports = {
   createPostController,
   getPostController,
   getPostDetailsController,
   likePostController,
+  unLikePostController,
   getFeedController,
 };
